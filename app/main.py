@@ -11,9 +11,18 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 
-@app.get("/promts")
-def get_promts(lang: str="ru"):
-    filename = f"app/data/promts_{lang}.json"
+@app.get("/prompts")
+def get_prompts(lang: str="ru"):
+    filename = f"app/data/prompts_{lang}.json"
     with open(filename, "r", encoding="utf-8") as f:
         return json.load(f)
     
+@app.get("/")
+async def home(request: Request):
+    filename = os.path.join(os.path.dirname(__file__), "data", "prompts_ru.json")
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            prompts = json.load(f)
+    except FileNotFoundError:
+        prompts = []
+    return templates.TemplateResponse("index.html", {"request": request, "prompts": prompts})
