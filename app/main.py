@@ -18,11 +18,11 @@ def get_prompts(lang: str="ru"):
         return json.load(f)
     
 @app.get("/")
-async def home(request: Request):
-    filename = os.path.join(os.path.dirname(__file__), "data", "prompts_ru.json")
+async def home(request: Request, lang: str="ru"):
+    filename = os.path.join(os.path.dirname(__file__), "data", f"prompts_{lang}.json")
     try:
         with open(filename, "r", encoding="utf-8") as f:
             prompts = json.load(f)
     except FileNotFoundError:
         prompts = []
-    return templates.TemplateResponse("index.html", {"request": request, "prompts": prompts})
+    return templates.TemplateResponse("index.html", {"request": request, "prompts": prompts, "lang": lang})

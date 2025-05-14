@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,9 @@
         <header>
             <h1>Настрой ChatGPT под себя</h1>
             <p>Выбирай, копируй и пробуй готовые промпты</p>
+            <nav>
+                <a href="/?lang=ru">Русский</a> | <a href="/?lang=en">English</a>
+            </nav>
         </header>
 
         <main>
@@ -23,6 +26,7 @@
                         <button onclick="copyToClipboard('{{ prompt.prompt | escape }}')">Копировать</button>
                     </div>
                 {% endfor %}
+            </section>
         </main>
 
         <script>
