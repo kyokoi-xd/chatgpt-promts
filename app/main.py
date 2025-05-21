@@ -18,11 +18,22 @@ def get_prompts(lang: str="ru"):
         return json.load(f)
     
 @app.get("/")
-async def home(request: Request, lang: str="ru"):
-    filename = os.path.join(os.path.dirname(__file__), "data", f"prompts_{lang}.json")
+async def home(request: Request):
     try:
-        with open(filename, "r", encoding="utf-8") as f:
-            prompts = json.load(f)
+        lang = request.cookies.get("lang")
+        agents_file = os.path.join(os.path.dirname(__file__), "data", "agents.json")
+        with open(agents_file, "r", encoding="utf-8") as f:
+            agents = json.load(f)
     except FileNotFoundError:
-        prompts = []
-    return templates.TemplateResponse("index.html", {"request": request, "prompts": prompts, "lang": lang})
+        agents = []
+
+    prompts_file = os.path.join(os.path.dirname(__file__), "data", "prompts_ru.json") 
+    with open(prompts_file, "r", encoding="utf-8") as f:
+        prompts = json.load(f)
+
+    return templates.TemplateResponse("home.html", {
+        "request": request, 
+        "agents": agents, 
+        "prompts": prompts, 
+        "active_tab": "home"
+        })
