@@ -7,9 +7,12 @@ body {
 }
 
 .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: #f4f4f4;
     padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #ddd;
 }
 
 .navbar ul {
@@ -17,19 +20,29 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 20px;
+    gap: 30px;
 }
 
-.navbar a {
+.nav-right {
+    display: flex;
+    gap: 15px;
+}
+.navbar a, .nav-item {
     text-decoration: none;
     color: #000;
     font-weight: 500;
     padding-bottom: 2px;
     border-bottom: 2px solid transparent;
+    cursor: pointer;
 }
 
 .navbar a:active {
-    border-bottom-color: #000000;
+    border-bottom-color: #000;
+}
+
+.nav-item.inactive {
+    color: #777;
+    cursor: default;
 }
 
 .header {
@@ -45,6 +58,7 @@ body {
 .header p {
     margin-top: 10px;
     color: #555;
+    font-size: 1.1em;
 }
 
 .container {

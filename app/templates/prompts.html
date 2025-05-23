@@ -10,7 +10,7 @@
         <nav class="navbar">
             <ul class="nav-left">
                 <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">Промпты</a></li>
-                <li><a href="/agents" class="{{ 'active' if active_tab == 'agents' else '' }}">ИИ-агенты</a></li>
+                <li><span class="nav-item inactive">ИИ-агенты (в разработке)</span></li>
             </ul>
             <ul class="nav-right">
                 <li><a href="/?lang=ru" title="Русский">🇷🇺</a></li>
@@ -18,9 +18,9 @@
             </ul>
         </nav>
 
-        <header>
+        <header class="header">
             <h1>Готовые промты</h1>
-            <p>Выбирай, копируй и пробуй готовые промпты</p>
+            <p>Выбирай, копируй и используй — на русском или английском</p>
         </header>
 
 
@@ -31,7 +31,7 @@
 
             <section id="promptsList">
                 {% for prompt in prompts %}
-                    <div class="prompt-card"{% if loop.index > 10 %} style="display:none"{% endif %}>
+                    <div class="prompt-card" data-index="{{ loop.index0 }}">
                         <h3 class="prompt-title">{{ prompt.act }}</h3>
                         <pre class="prompt-text">{{ prompt.prompt }}</pre>
                         <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt | escape }}')" title="Скопировать">📋</button>
@@ -41,46 +41,60 @@
 
             {% if prompts|length > 10 %}
                 <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="showMorePrompts()">Показать ещё</button>
+                    <button id="showMoreBtn">Показать ещё</button>
                 </div>
             {% endif %}
         </main>
 
         <script>
+
+            const totalPrompts = {{ prompts|length }};
+            let visibleCount = 10;
+            let filterQuery = "";
+
+            document.addEventListener("DOMContentLoaded", () => {
+                updateDisplay();
+            });
+
+            function updateDisplay() {
+                const cards = Array.from(document.querySelectorAll('.prompt-card'));
+                const filtered = cards.filter(card => {
+                    const title = card.querySelector(".prompt-title").innerText.toLowerCase();
+                    const text = card.querySelector(".prompt-text").innerText.toLowerCase();
+                    return title.includes(filterQuery) || text.includes(filterQuery);
+                });
+
+                cards.forEach((card => card.style.display = 'none'));
+                filtered.slice(0, visibleCount).forEach(card => {
+                    card.style.display = '';
+                });
+
+                const showMoreBtn = document.getElementById('showMoreBtn');
+                if (filtered.length > visibleCount) {
+                    showMoreBtn.style.display = '';
+                } else if (showMoreBtn){
+                    showMoreBtn.style.display = 'none';
+                }
+            }
+
+
+            function filterPrompts() {
+                filterQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+                visibleCount = 10; // Reset visible count on new search
+                updateDisplay();
+            }
+            
+            document.getElementById('showMoreBtn')?.addEventListener('click', () => {
+                visibleCount += 10;
+                updateDisplay();
+            });
+            
             function copyToClipboard(text) {
                 navigator.clipboard.writeText(text).then(() => {
                     alert('Промпт скопирован.');
                 }, function(err) {
                     console.error('Ошибка при копировании текста: ', err);
                 });
-            }
-
-            function filterPrompts() {
-                const query = document.getElementById('searchInput').value.toLowerCase();
-                const cards = document.querySelectorAll('.prompt-card');
-
-                cards.forEach(card => {
-                    const title = card.querySelector('.prompt-title').innerText.toLowerCase();
-                    const text = card.querySelector('.prompt-text').innerText.toLowerCase();
-
-                    if (title.includes(query) || text.includes(query)) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-            
-            function showMorePrompts()  {
-                const hidden = document.querySelectorAll('.prompt-card[style*="display: none"]');
-
-                for (let i = 0; i < 10 && i < hidden.length; i++) {
-                    hidden[i].style.display = '';
-                }
-
-                if (hidden.length <= 10) {
-                    event.target.style.display = 'none'; // Hide the button if no more hidden prompts
-                }
             }
         </script>
     </body>
