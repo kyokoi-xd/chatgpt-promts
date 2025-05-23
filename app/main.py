@@ -11,29 +11,25 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 
-@app.get("/prompts")
-def get_prompts(lang: str="ru"):
-    filename = f"app/data/prompts_{lang}.json"
-    with open(filename, "r", encoding="utf-8") as f:
-        return json.load(f)
-    
 @app.get("/")
-async def home(request: Request):
+async def show_prompts(request: Request, lang: str = "ru"):
+    filename = os.path.join(os.path.dirname(__file__), "data", f"prompts_{lang}.json")
     try:
-        lang = request.cookies.get("lang")
-        agents_file = os.path.join(os.path.dirname(__file__), "data", "agents.json")
-        with open(agents_file, "r", encoding="utf-8") as f:
-            agents = json.load(f)
+        with open(filename, "r", encoding="utf-8") as f:
+            prompts = json.load(f)
     except FileNotFoundError:
-        agents = []
+        prompts = {}
 
-    prompts_file = os.path.join(os.path.dirname(__file__), "data", "prompts_ru.json") 
-    with open(prompts_file, "r", encoding="utf-8") as f:
-        prompts = json.load(f)
+    return templates.TemplateResponse("prompts.html", {
+        "request": request,
+        "prompts": prompts,
+        "lang": lang,
+        "active_tab": "prompts",
+    })
 
-    return templates.TemplateResponse("home.html", {
-        "request": request, 
-        "agents": agents, 
-        "prompts": prompts, 
-        "active_tab": "home"
-        })
+@app.get("/agents")
+async def show_agents(request: Request):
+    return templates.TemplateResponse("agents.html", {
+        "request": request,
+        "active_tab": "agents",
+    })

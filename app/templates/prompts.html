@@ -1,41 +1,86 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang}}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Настрой ChatGPT под себя</title>
+        <title>Промпты - Настрой ИИ под себя</title>
         <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
+        <nav class="navbar">
+            <ul class="nav-left">
+                <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">Промпты</a></li>
+                <li><a href="/agents" class="{{ 'active' if active_tab == 'agents' else '' }}">ИИ-агенты</a></li>
+            </ul>
+            <ul class="nav-right">
+                <li><a href="/?lang=ru" title="Русский">🇷🇺</a></li>
+                <li><a href="/?lang=en" title="English">🇺🇸</a></li>
+            </ul>
+        </nav>
 
         <header>
-            <h1>Настрой ChatGPT под себя</h1>
+            <h1>Готовые промты</h1>
             <p>Выбирай, копируй и пробуй готовые промпты</p>
-            <nav>
-                <a href="/?lang=ru">Русский</a> | <a href="/?lang=en">English</a>
-            </nav>
         </header>
 
-        <main>
-            <section id="prompts">
-                <h2>Готовые промпты</h2>
+
+        <main class="container">
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Поиск по названию или тексту..." onkeyup="filterPrompts()">
+            </div>
+
+            <section id="promptsList">
                 {% for prompt in prompts %}
-                    <div class="prompt-card">
-                        <h3>{{ prompt.act }}</h3>
-                        <pre>{{ prompt.prompt }}</pre>
-                        <button onclick="copyToClipboard('{{ prompt.prompt | escape }}')">Копировать</button>
+                    <div class="prompt-card"{% if loop.index > 10 %} style="display:none"{% endif %}>
+                        <h3 class="prompt-title">{{ prompt.act }}</h3>
+                        <pre class="prompt-text">{{ prompt.prompt }}</pre>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt | escape }}')" title="Скопировать">📋</button>
                     </div>
                 {% endfor %}
             </section>
+
+            {% if prompts|length > 10 %}
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="showMorePrompts()">Показать ещё</button>
+                </div>
+            {% endif %}
         </main>
 
         <script>
             function copyToClipboard(text) {
                 navigator.clipboard.writeText(text).then(() => {
-                    alert('Промпт скопирован в буфер обмена!');
+                    alert('Промпт скопирован.');
                 }, function(err) {
                     console.error('Ошибка при копировании текста: ', err);
                 });
+            }
+
+            function filterPrompts() {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                const cards = document.querySelectorAll('.prompt-card');
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.prompt-title').innerText.toLowerCase();
+                    const text = card.querySelector('.prompt-text').innerText.toLowerCase();
+
+                    if (title.includes(query) || text.includes(query)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            function showMorePrompts()  {
+                const hidden = document.querySelectorAll('.prompt-card[style*="display: none"]');
+
+                for (let i = 0; i < 10 && i < hidden.length; i++) {
+                    hidden[i].style.display = '';
+                }
+
+                if (hidden.length <= 10) {
+                    event.target.style.display = 'none'; // Hide the button if no more hidden prompts
+                }
             }
         </script>
     </body>
