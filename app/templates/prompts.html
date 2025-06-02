@@ -5,9 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Промпты - Настрой ИИ под себя</title>
         <link rel="stylesheet" href="/static/style.css">
+        <link rel="icon" href="/static/icons/favicon.ico" type="image/x-icon">
+        <link rel="apple-touch-icon" href="/static/icons/favicon-96x96.png">
     </head>
     <body>
         <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <img src="/static/icons/favicon-96x96.png" alt="Промтариум" width="40" height="40">
+            </a>
+
             <ul class="nav-left">
                 <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">Промпты</a></li>
                 <li><span class="nav-item inactive">ИИ-агенты (в разработке)</span></li>
@@ -48,8 +54,8 @@
 
         <script>
 
-            const totalPrompts = {{ prompts|length }};
-            let visibleCount = 10;
+            const totalPrompts = Number("{{ prompts|length }}");
+            let visibleCount = 12;
             let filterQuery = "";
 
             document.addEventListener("DOMContentLoaded", () => {

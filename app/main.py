@@ -16,7 +16,7 @@ async def show_prompts(request: Request, lang: str = "ru"):
     filename = os.path.join(os.path.dirname(__file__), "data", f"prompts_{lang}.json")
     try:
         with open(filename, "r", encoding="utf-8") as f:
-            prompts = json.load(f)
+            prompts = json.load(f)  
     except FileNotFoundError:
         prompts = {}
 

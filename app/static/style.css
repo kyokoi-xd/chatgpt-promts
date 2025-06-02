@@ -45,6 +45,10 @@ body {
     cursor: default;
 }
 
+.navbar img {
+    display: block;
+}
+
 .header {
     text-align: center;
     padding: 40px 20px;
@@ -62,7 +66,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -80,12 +84,21 @@ body {
     border-radius: 4px;
 }
 
+#promptsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
 .prompt-card {
     border: 1px solid #ddd;
     border-radius: 6px;
     padding: 15px;
-    margin-bottom: 15px;
     background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .prompt-card h3 {
@@ -134,5 +147,11 @@ body {
 
     .search-filter input {
         width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    #promptsList {
+        grid-template-columns: 1fr;
     }
 }
