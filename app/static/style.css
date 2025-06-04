@@ -11,8 +11,12 @@ body {
     justify-content: space-between;
     align-items: center;
     background-color: #f4f4f4;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ddd;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .navbar ul {
@@ -23,46 +27,74 @@ body {
     gap: 30px;
 }
 
-.nav-right {
+.nav-right,
+.nav_left {
     display: flex;
-    gap: 15px;
+    gap: 24px;
+    align-items: center;
 }
+
+.nav-right li {
+    display: inline-flex;
+}   
 .navbar a, .nav-item {
-    text-decoration: none;
-    color: #000;
+    font-size: 1rem;
     font-weight: 500;
-    padding-bottom: 2px;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
+    text-decoration: none;
+    color: #222222;
+    padding: 4px 0;
+    position: relative;
+    transition: color 0.2s ease;
 }
 
 .navbar a:active {
-    border-bottom-color: #000;
+    color: #000000;
 }
 
+.nav-left a.active::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #000000;
+} 
+
 .nav-item.inactive {
-    color: #777;
+    color: #999999;
     cursor: default;
+    font-style: italic;
 }
 
 .navbar img {
     display: block;
 }
 
+.nav-logo img {
+    display: block;
+    width: 40px;
+    height: 40px;
+}
+
 .header {
     text-align: center;
-    padding: 40px 20px;
+    padding: 60px 20px;
+    background-color: #f9f9f9;
 }
 
 .header h1 {
-    font-size: 2em;
+    font-size: 2.5em;
     margin: 0;
+    line-height: 1.2;
+    color: #111111;
 }
 
 .header p {
-    margin-top: 10px;
-    color: #555;
-    font-size: 1.1em;
+    margin-top: 12px;
+    color: #555555;
+    font-size: 1.125em;
+    line-height: 1.5;
 }
 
 .container {
@@ -78,10 +110,22 @@ body {
 
 .search-filter input {
     width: 100%;
-    max-width: 400px;
-    padding: 8px 12px;
+    max-width: 500px;
+    padding: 10px 12px 10px 40px;
+    font-size: 1rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 24px;
+    background-color: #fafafa;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23999' viewBox='0 0 24 24'><path d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-filter input:focus {
+    border-color: #000000;
+    box-shadow: 0 0 6px rgba(136, 136, 136, 0.3);
+    outline: none;
 }
 
 #promptsList {
@@ -96,9 +140,6 @@ body {
     border-radius: 6px;
     padding: 15px;
     background-color: #fafafa;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .prompt-card h3 {
@@ -115,13 +156,26 @@ body {
     margin: 0;
 }
 
-.copy-btn {
-    margin-top: 8px;
-    padding: 6px 10px;
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.prompt-title {
     font-size: 1.1em;
+    margin:0;
+    flex-grow: 1;
+    word-break: break-word;
+}
+
+.copy-btn {
     background: none;
     border: none;
+    font-size: 1.2em;
     cursor: pointer;
+    padding: 4px 6px;
 }
 
 .copy-btn:hover {
@@ -133,6 +187,50 @@ body {
     padding: 80px 20px;
     color: #777;
     font-size: 1.1em;;
+}
+
+
+.flag-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.flag-icon:hover {
+    transform: scale(1.1);
+    border-color: #bbb;
+}
+
+.flag-icon.active-flag {
+    border-color: #000;
+}
+
+#showMoreBtn {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+#showMoreBtn:hover {
+    background-color: #222222;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+#showMoreBtn:active {
+    background-color: #111111;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
 }
 
 @media (max-width: 600px) {

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Промпты - Настрой ИИ под себя</title>
+        <title>{{ ui.nav_prompts }}</title>
         <link rel="stylesheet" href="/static/style.css">
         <link rel="icon" href="/static/icons/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon" href="/static/icons/favicon-96x96.png">
@@ -15,39 +15,59 @@
             </a>
 
             <ul class="nav-left">
-                <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">Промпты</a></li>
-                <li><span class="nav-item inactive">ИИ-агенты (в разработке)</span></li>
+                <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">{{ ui.nav_prompts }}</a></li>
+                <li><span class="nav-item inactive">{{ ui.nav_agents}}</span></li>
             </ul>
             <ul class="nav-right">
-                <li><a href="/?lang=ru" title="Русский">🇷🇺</a></li>
-                <li><a href="/?lang=en" title="English">🇺🇸</a></li>
+                <li><a href="/?lang=ru" title="Русский">
+                    <img src="/static/icons/flags/flag-ru.png" alt="RU" class="flag-icon {% if active_lang == 'ru' %}active-flag{% endif %}">
+                </a></li>
+                <li><a href="/?lang=en" title="English">
+                    <img src="/static/icons/flags/flag-en.png" alt="EN" class="flag-icon {% if active_lang == 'en' %}active-flag{% endif %}">
+                </a></li>
             </ul>
         </nav>
 
         <header class="header">
-            <h1>Готовые промты</h1>
-            <p>Выбирай, копируй и используй — на русском или английском</p>
+            <h1>{{ ui.header_title }}</h1>
+            <p>{{ ui.header_subtitle }}</p>
         </header>
 
 
         <main class="container">
             <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Поиск по названию или тексту..." onkeyup="filterPrompts()">
+                <input type="text" id="searchInput" placeholder="{{ ui.search_placeholder }}" onkeyup="filterPrompts()">
             </div>
 
             <section id="promptsList">
                 {% for prompt in prompts %}
-                    <div class="prompt-card" data-index="{{ loop.index0 }}">
-                        <h3 class="prompt-title">{{ prompt.act }}</h3>
-                        <pre class="prompt-text">{{ prompt.prompt }}</pre>
-                        <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt | escape }}')" title="Скопировать">📋</button>
+                    <div class="prompt-card" 
+                        data-ru-act="{{ prompt.act_ru | escape }}"
+                        data-ru-prompt="{{ prompt.prompt_ru | escape }}"
+                        data-en-act="{{ prompt.act_en | escape }}"
+                        data-en-prompt="{{ prompt.prompt_en | escape }}"
+                        data-index="{{ loop.index0 }}">
+                        <div class ="prompt-header">
+                            {% if lang == 'ru' %}
+                                <h3 class="prompt-title">{{ prompt.act_ru }}</h3>
+                                <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt_ru | escape }}')" title="{{ ui.prompt_copied }}">📋</button>
+                            {% else %}
+                                <h3 class="prompt-title">{{ prompt.act_en }}</h3>
+                                <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt_en | escape }}')" title="{{ ui.prompt_copied }}">📋</button>
+                            {% endif %}
+                        </div>
+                        {% if lang == 'ru' %}
+                            <pre class="prompt-text">{{ prompt.prompt_ru }}</pre>
+                        {% else %}
+                            <pre class="prompt-text">{{ prompt.prompt_en }}</pre>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </section>
 
-            {% if prompts|length > 10 %}
+            {% if prompts|length > 12 %}
                 <div style="text-align: center; margin-top: 20px;">
-                    <button id="showMoreBtn">Показать ещё</button>
+                    <button id="showMoreBtn">{{ ui.show_more }}</button>
                 </div>
             {% endif %}
         </main>
@@ -65,9 +85,12 @@
             function updateDisplay() {
                 const cards = Array.from(document.querySelectorAll('.prompt-card'));
                 const filtered = cards.filter(card => {
-                    const title = card.querySelector(".prompt-title").innerText.toLowerCase();
-                    const text = card.querySelector(".prompt-text").innerText.toLowerCase();
-                    return title.includes(filterQuery) || text.includes(filterQuery);
+                    const ruAct = card.getAttribute('data-ru-act').toLowerCase();
+                    const ruText = card.getAttribute('data-ru-prompt').toLowerCase();
+                    const enAct = card.getAttribute('data-en-act').toLowerCase();
+                    const enText = card.getAttribute('data-en-prompt').toLowerCase();
+                    return ruAct.includes(filterQuery) || ruText.includes(filterQuery) ||
+                           enAct.includes(filterQuery) || enText.includes(filterQuery);
                 });
 
                 cards.forEach((card => card.style.display = 'none'));
@@ -86,18 +109,18 @@
 
             function filterPrompts() {
                 filterQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-                visibleCount = 10; // Reset visible count on new search
+                visibleCount = 12; // Reset visible count on new search
                 updateDisplay();
             }
             
             document.getElementById('showMoreBtn')?.addEventListener('click', () => {
-                visibleCount += 10;
+                visibleCount += 12;
                 updateDisplay();
             });
             
             function copyToClipboard(text) {
                 navigator.clipboard.writeText(text).then(() => {
-                    alert('Промпт скопирован.');
+                    alert('{{ ui.prompt_copied }}');
                 }, function(err) {
                     console.error('Ошибка при копировании текста: ', err);
                 });
