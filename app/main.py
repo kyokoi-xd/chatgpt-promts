@@ -18,7 +18,8 @@ UI_TEXT ={
         "header_subtitle": "Выбирай, копируй и используй — на русском или английском",
         "search_placeholder": "Поиск по названию или тексту...",
         "show_more": "Показать ещё",
-        "prompt_copied": "Промт скопирован."
+        "prompt_copied": "Промт скопирован.",
+        "expand_prompt": "Читать полностью",
     },
     "en": {
         "nav_prompts": "Prompts",
@@ -27,7 +28,8 @@ UI_TEXT ={
         "header_subtitle": "Choose, copy and use — in Russian or English",
         "search_placeholder": "Search by title or text...",
         "show_more": "Show more",
-        "prompt_copied": "Prompt copied."
+        "prompt_copied": "Prompt copied.",
+        "expand_prompt": "Read more",
     }
 }
 

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ lang}}">
+<html lang="{{ lang }}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ ui.nav_prompts }}</title>
         <link rel="stylesheet" href="/static/style.css">
+        <script src="/static/script.js"></script>
         <link rel="icon" href="/static/icons/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon" href="/static/icons/favicon-96x96.png">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar">
@@ -56,11 +58,16 @@
                                 <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt_en | escape }}')" title="{{ ui.prompt_copied }}">📋</button>
                             {% endif %}
                         </div>
-                        {% if lang == 'ru' %}
-                            <pre class="prompt-text">{{ prompt.prompt_ru }}</pre>
-                        {% else %}
-                            <pre class="prompt-text">{{ prompt.prompt_en }}</pre>
-                        {% endif %}
+                        <div class="prompt-text-container">
+                            <div class="prompt-text">
+                                {% if lang == 'ru' %}
+                                    {{ prompt.prompt_ru }}
+                                {% else %}
+                                    {{ prompt.prompt_en }}
+                                {% endif %}
+                            </div>
+                            <button class="expand-btn" data-lang= "{{ lang }}" onclick="toggleFullText(this)">{% if lang == 'ru' %}Читать полностью&nbsp;↓{% else %}Read more&nbsp;↓{% endif %}</button>
+                        </div>
                     </div>
                 {% endfor %}
             </section>
