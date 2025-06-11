@@ -32,7 +32,9 @@
 
         <header class="header">
             <h1>{{ ui.header_title }}</h1>
-            <p>{{ ui.header_subtitle }}</p>
+            <div class="header-subtitle-card">
+                <p>{{ ui.header_subtitle }}</p>
+            </div>
         </header>
 
 
@@ -66,7 +68,9 @@
                                     {{ prompt.prompt_en }}
                                 {% endif %}
                             </div>
-                            <button class="expand-btn" data-lang= "{{ lang }}" onclick="toggleFullText(this)">{% if lang == 'ru' %}Читать полностью&nbsp;↓{% else %}Read more&nbsp;↓{% endif %}</button>
+                            <div class="expand-btn-wrapper">
+                                <button class="expand-btn" data-lang= "{{ lang }}" onclick="toggleFullText(this)">{% if lang == 'ru' %}Читать полностью&nbsp;↓{% else %}Read more&nbsp;↓{% endif %}</button>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
