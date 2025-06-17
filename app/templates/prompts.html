@@ -41,6 +41,7 @@
         <main class="container">
             <div class="search-filter">
                 <input type="text" id="searchInput" placeholder="{{ ui.search_placeholder }}" onkeyup="filterPrompts()">
+                <button class="random-btn" onclick="scrollToRandomPrompt()">{% if lang == 'ru' %}Случайный промпт{% else %}Random Prompt{% endif %}</button>
             </div>
 
             <section id="promptsList">
@@ -82,7 +83,21 @@
                 </div>
             {% endif %}
         </main>
+        <footer class="footer">
+            <div class="footer-row">
+                <small>© <span id="currentYear"></span> Promtarium</small>
+            </div>
+            <div class="footer-row">
+                <a href="mailto:dv5296835@gmail.com">dv5296835@gmail.com</a>
+                <span class="sep">|</span>
+                <a href="/privacy">Privacy</a>
+                <span class="sep">|</span>
+                <a href="/terms">Terms</a>
+            </div>
+        </footer>
 
+        <button class="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth'})">↑</button>
+        
         <script>
 
             const totalPrompts = Number("{{ prompts|length }}");
@@ -94,25 +109,43 @@
             });
 
             function updateDisplay() {
+                const query = filterQuery.toLowerCase();
                 const cards = Array.from(document.querySelectorAll('.prompt-card'));
-                const filtered = cards.filter(card => {
+
+                let matchedCount = 0;
+                cards.forEach((card, index) => {
                     const ruAct = card.getAttribute('data-ru-act').toLowerCase();
                     const ruText = card.getAttribute('data-ru-prompt').toLowerCase();
                     const enAct = card.getAttribute('data-en-act').toLowerCase();
                     const enText = card.getAttribute('data-en-prompt').toLowerCase();
-                    return ruAct.includes(filterQuery) || ruText.includes(filterQuery) ||
-                           enAct.includes(filterQuery) || enText.includes(filterQuery);
-                });
 
-                cards.forEach((card => card.style.display = 'none'));
-                filtered.slice(0, visibleCount).forEach(card => {
-                    card.style.display = '';
+                    const match = ruAct.includes(query) || ruText.includes(query) || enAct.includes(query) || enText.includes(query);
+
+                    if (match && matchedCount < visibleCount) {
+                        card.style.display = '';
+
+                        // Подсветка
+                        const promptText = card.querySelector('.prompt-text');
+                        const lang = card.getAttribute('data-lang') || '{{ lang }}';
+                        const rawText = lang === 'ru' ? card.getAttribute('data-ru-prompt') : card.getAttribute('data-en-prompt');
+
+                        if (query.trim() !== '') {
+                            const regex = new RegExp(`(${query})`, 'gi');
+                            promptText.innerHTML = rawText.replace(regex, '<mark>$1</mark>');
+                        } else {
+                            promptText.innerText = rawText;
+                        }
+
+                        matchedCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
 
                 const showMoreBtn = document.getElementById('showMoreBtn');
-                if (filtered.length > visibleCount) {
+                if (matchedCount >= visibleCount) {
                     showMoreBtn.style.display = '';
-                } else if (showMoreBtn){
+                } else if (showMoreBtn) {
                     showMoreBtn.style.display = 'none';
                 }
             }
@@ -136,6 +169,9 @@
                     console.error('Ошибка при копировании текста: ', err);
                 });
             }
+
+            document.getElementById('currentYear').innerText = new Date().getFullYear();
         </script>
+
     </body>
 </html>
