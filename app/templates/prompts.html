@@ -1,177 +1,75 @@
-<!DOCTYPE html>
-<html lang="{{ lang }}">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ ui.nav_prompts }}</title>
-        <link rel="stylesheet" href="/static/style.css">
-        <script src="/static/script.js"></script>
-        <link rel="icon" href="/static/icons/favicon.ico" type="image/x-icon">
-        <link rel="apple-touch-icon" href="/static/icons/favicon-96x96.png">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <nav class="navbar">
-            <a href="/" class="nav-logo">
-                <img src="/static/icons/favicon-96x96.png" alt="Промтариум" width="40" height="40">
-            </a>
+{% extends "base.html" %}
 
-            <ul class="nav-left">
-                <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">{{ ui.nav_prompts }}</a></li>
-                <li><span class="nav-item inactive">{{ ui.nav_agents}}</span></li>
-            </ul>
-            <ul class="nav-right">
-                <li><a href="/?lang=ru" title="Русский">
-                    <img src="/static/icons/flags/flag-ru.png" alt="RU" class="flag-icon {% if active_lang == 'ru' %}active-flag{% endif %}">
-                </a></li>
-                <li><a href="/?lang=en" title="English">
-                    <img src="/static/icons/flags/flag-en.png" alt="EN" class="flag-icon {% if active_lang == 'en' %}active-flag{% endif %}">
-                </a></li>
-            </ul>
-        </nav>
+{% block title %}{{ ui.nav_prompts }}{% endblock %}
 
-        <header class="header">
-            <h1>{{ ui.header_title }}</h1>
-            <div class="header-subtitle-card">
-                <p>{{ ui.header_subtitle }}</p>
-            </div>
-        </header>
+{% block header %}
+<header class="header">
+  <h1>{{ ui.header_title }}</h1>
+  <div class="header-subtitle-card">
+    <p>{{ ui.header_subtitle }}</p>
+  </div>
+</header>
+{% endblock %}
 
+{% block content %}
+<div class="search-filter">
+  <input type="text" id="searchInput" placeholder="{{ ui.search_placeholder }}">
+  <button class="random-btn" onclick="scrollToRandomPrompt()">
+    {% if lang == 'ru' %}Случайный промпт{% else %}Random Prompt{% endif %}
+  </button>
+</div>
 
-        <main class="container">
-            <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="{{ ui.search_placeholder }}" onkeyup="filterPrompts()">
-                <button class="random-btn" onclick="scrollToRandomPrompt()">{% if lang == 'ru' %}Случайный промпт{% else %}Random Prompt{% endif %}</button>
-            </div>
+<section id="promptsList">
+  {% for prompt in prompts %}
+    <div class="prompt-card"
+         data-ru-act="{{ prompt.act_ru|e }}"
+         data-ru-prompt="{{ prompt.prompt_ru|e }}"
+         data-en-act="{{ prompt.act_en|e }}"
+         data-en-prompt="{{ prompt.prompt_en|e }}"
+         data-index="{{ loop.index0 }}">
+      <div class="prompt-header">
+        {% if lang == 'ru' %}
+          <h3 class="prompt-title">{{ prompt.act_ru }}</h3>
+          <button class="copy-btn"
+                  onclick="copyToClipboard('{{ prompt.prompt_ru|e }}')"
+                  title="{{ ui.prompt_copied }}">📋</button>
+        {% else %}
+          <h3 class="prompt-title">{{ prompt.act_en }}</h3>
+          <button class="copy-btn"
+                  onclick="copyToClipboard('{{ prompt.prompt_en|e }}')"
+                  title="{{ ui.prompt_copied }}">📋</button>
+        {% endif %}
+      </div>
+      <div class="prompt-text-container">
+        <div class="prompt-text">
+          {% if lang == 'ru' %}
+            {{ prompt.prompt_ru }}
+          {% else %}
+            {{ prompt.prompt_en }}
+          {% endif %}
+        </div>
+        <div class="expand-btn-wrapper">
+          <button class="expand-btn"
+                  data-lang="{{ lang }}"
+                  onclick="toggleFullText(this)">
+            {% if lang == 'ru' %}Читать полностью ↓{% else %}Read more ↓{% endif %}
+          </button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</section>
 
-            <section id="promptsList">
-                {% for prompt in prompts %}
-                    <div class="prompt-card" 
-                        data-ru-act="{{ prompt.act_ru | escape }}"
-                        data-ru-prompt="{{ prompt.prompt_ru | escape }}"
-                        data-en-act="{{ prompt.act_en | escape }}"
-                        data-en-prompt="{{ prompt.prompt_en | escape }}"
-                        data-index="{{ loop.index0 }}">
-                        <div class ="prompt-header">
-                            {% if lang == 'ru' %}
-                                <h3 class="prompt-title">{{ prompt.act_ru }}</h3>
-                                <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt_ru | escape }}')" title="{{ ui.prompt_copied }}">📋</button>
-                            {% else %}
-                                <h3 class="prompt-title">{{ prompt.act_en }}</h3>
-                                <button class="copy-btn" onclick="copyToClipboard('{{ prompt.prompt_en | escape }}')" title="{{ ui.prompt_copied }}">📋</button>
-                            {% endif %}
-                        </div>
-                        <div class="prompt-text-container">
-                            <div class="prompt-text">
-                                {% if lang == 'ru' %}
-                                    {{ prompt.prompt_ru }}
-                                {% else %}
-                                    {{ prompt.prompt_en }}
-                                {% endif %}
-                            </div>
-                            <div class="expand-btn-wrapper">
-                                <button class="expand-btn" data-lang= "{{ lang }}" onclick="toggleFullText(this)">{% if lang == 'ru' %}Читать полностью&nbsp;↓{% else %}Read more&nbsp;↓{% endif %}</button>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </section>
+{% if prompts|length > 12 %}
+  <div style="text-align:center; margin-top:20px;">
+    <button id="showMoreBtn">{{ ui.show_more }}</button>
+  </div>
+{% endif %}
+{% endblock %}
 
-            {% if prompts|length > 12 %}
-                <div style="text-align: center; margin-top: 20px;">
-                    <button id="showMoreBtn">{{ ui.show_more }}</button>
-                </div>
-            {% endif %}
-        </main>
-        <footer class="footer">
-            <div class="footer-row">
-                <small>© <span id="currentYear"></span> Promtarium</small>
-            </div>
-            <div class="footer-row">
-                <a href="mailto:dv5296835@gmail.com">dv5296835@gmail.com</a>
-                <span class="sep">|</span>
-                <a href="/privacy">Privacy</a>
-                <span class="sep">|</span>
-                <a href="/terms">Terms</a>
-            </div>
-        </footer>
-
-        <button class="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth'})">↑</button>
-        
-        <script>
-
-            const totalPrompts = Number("{{ prompts|length }}");
-            let visibleCount = 12;
-            let filterQuery = "";
-
-            document.addEventListener("DOMContentLoaded", () => {
-                updateDisplay();
-            });
-
-            function updateDisplay() {
-                const query = filterQuery.toLowerCase();
-                const cards = Array.from(document.querySelectorAll('.prompt-card'));
-
-                let matchedCount = 0;
-                cards.forEach((card, index) => {
-                    const ruAct = card.getAttribute('data-ru-act').toLowerCase();
-                    const ruText = card.getAttribute('data-ru-prompt').toLowerCase();
-                    const enAct = card.getAttribute('data-en-act').toLowerCase();
-                    const enText = card.getAttribute('data-en-prompt').toLowerCase();
-
-                    const match = ruAct.includes(query) || ruText.includes(query) || enAct.includes(query) || enText.includes(query);
-
-                    if (match && matchedCount < visibleCount) {
-                        card.style.display = '';
-
-                        // Подсветка
-                        const promptText = card.querySelector('.prompt-text');
-                        const lang = card.getAttribute('data-lang') || '{{ lang }}';
-                        const rawText = lang === 'ru' ? card.getAttribute('data-ru-prompt') : card.getAttribute('data-en-prompt');
-
-                        if (query.trim() !== '') {
-                            const regex = new RegExp(`(${query})`, 'gi');
-                            promptText.innerHTML = rawText.replace(regex, '<mark>$1</mark>');
-                        } else {
-                            promptText.innerText = rawText;
-                        }
-
-                        matchedCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                const showMoreBtn = document.getElementById('showMoreBtn');
-                if (matchedCount >= visibleCount) {
-                    showMoreBtn.style.display = '';
-                } else if (showMoreBtn) {
-                    showMoreBtn.style.display = 'none';
-                }
-            }
-
-
-            function filterPrompts() {
-                filterQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-                visibleCount = 12; // Reset visible count on new search
-                updateDisplay();
-            }
-            
-            document.getElementById('showMoreBtn')?.addEventListener('click', () => {
-                visibleCount += 12;
-                updateDisplay();
-            });
-            
-            function copyToClipboard(text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('{{ ui.prompt_copied }}');
-                }, function(err) {
-                    console.error('Ошибка при копировании текста: ', err);
-                });
-            }
-
-            document.getElementById('currentYear').innerText = new Date().getFullYear();
-        </script>
-
-    </body>
-</html>
+{% block scripts %}
+<script>
+  // передаём количество промптов, язык и текст копирования
+  initPrompts({{ prompts|length }}, '{{ lang }}', '{{ ui.prompt_copied }}');
+</script>
+{% endblock %}

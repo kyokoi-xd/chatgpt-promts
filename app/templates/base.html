@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ ui.nav_prompts }}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/icons/favicon.ico">
+    <link rel="apple-touch-icon" href="/static/icons/favicon-96x96.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  </head>
+
+    <body>
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <img src="/static/icons/favicon-96x96.png" alt="Промтариум" width="40" height="40">
+            </a>
+
+            <ul class="nav-left">
+                <li><a href="/" class="{{ 'active' if active_tab == 'prompts' else '' }}">{{ ui.nav_prompts }}</a></li>
+                <li><span class="nav-item inactive">{{ ui.nav_agents}}</span></li>
+            </ul>
+            <ul class="nav-right">
+                <li><a href="/?lang=ru" title="Русский">
+                    <img src="/static/icons/flags/flag-ru.png" alt="RU" class="flag-icon {% if active_lang == 'ru' %}active-flag{% endif %}">
+                </a></li>
+                <li><a href="/?lang=en" title="English">
+                    <img src="/static/icons/flags/flag-en.png" alt="EN" class="flag-icon {% if active_lang == 'en' %}active-flag{% endif %}">
+                </a></li>
+            </ul>
+        </nav>
+
+
+        {% block header %}{% endblock %}
+
+        <main class="container">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="footer-row">
+                    <small>© <span id="currentYear"></span> Promtarium</small>
+                </div>
+                <div class="footer-row">
+                    <a href="mailto:dv5296835@gmail.com">dv5296835@gmail.com</a>
+                    <span class="sep">|</span>
+                    <a href="/privacy">Privacy</a>
+                    <span class="sep">|</span>
+                    <a href="/terms">Terms</a>
+                </div>
+        </footer>
+
+        <button class="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth'})">↑</button>
+
+        <script src="/static/script.js"></script>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>
