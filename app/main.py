@@ -3,8 +3,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import json
 import os
+from app.db import database, metadata, engine
 
 app = FastAPI()
+metadata.create_all(engine)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -32,6 +34,14 @@ UI_TEXT ={
         "expand_prompt": "Read more",
     }
 }
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
 
 @app.get("/")
 async def show_prompts(request: Request, lang: str = "ru"):
